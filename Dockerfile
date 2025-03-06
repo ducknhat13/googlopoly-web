@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    nginx \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd pdo pdo_mysql bcmath
 
@@ -35,8 +36,11 @@ RUN composer install --no-dev --optimize-autoloader --prefer-dist
 # Phân quyền cho storage và bootstrap/cache
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-# Expose cổng 9000 để Nginx kết nối
-EXPOSE 9000
+# Sao chép file cấu hình Nginx
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Expose cổng 80 để Nginx phục vụ web
+EXPOSE 80
 
 # Lệnh chạy khi container khởi động
-CMD ["php-fpm"]
+CMD ["sh", "-c", "php-fpm & nginx -g 'daemon off;'" ]
