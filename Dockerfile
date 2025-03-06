@@ -12,8 +12,10 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd pdo pdo_mysql bcmath
 
-# Cài đặt Composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Cài đặt Composer đúng cách
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+    php composer-setup.php --install-dir=/usr/local/bin --filename=composer && \
+    php -r "unlink('composer-setup.php');"
 
 # Tạo thư mục Composer cache và phân quyền
 RUN mkdir -p /root/.composer && chown -R www-data:www-data /root/.composer
