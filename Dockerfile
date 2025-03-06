@@ -13,7 +13,10 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-install gd pdo pdo_mysql bcmath
 
 # Cài đặt Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+
+# Tạo thư mục Composer cache và phân quyền
+RUN mkdir -p /root/.composer && chown -R www-data:www-data /root/.composer
 
 # Tăng giới hạn bộ nhớ PHP
 RUN echo "memory_limit = 512M" > /usr/local/etc/php/conf.d/memory-limit.ini
